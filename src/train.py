@@ -1,45 +1,12 @@
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import torch
-import torch.nn as nn
 from draw import DRAW
 from einops import rearrange
-from torch import Tensor
 from torch.utils.data import DataLoader, random_split
 from torchvision import datasets
 from torchvision.transforms import ToTensor
 from tqdm import tqdm
-
-# class DrawLoss(nn.BCELoss):
-#     def forward(self, image: Tensor, reconst: Tensor, mus: Tensor, sigmas: Tensor) -> Tensor:
-#         reconst_loss = super().forward(
-#             reconst, image).reshape(image.shape[0], -1).sum(-1)
-#         # reconst_loss = super().forward(
-#         #     reconst, image).sum(-1)
-#         latent_loss = self.compute_latent_loss(mus, sigmas)
-#         print("reconst_loss", torch.mean(reconst_loss).detach().item())
-#         print("latent_loss", torch.mean(latent_loss).detach().item())
-#         return torch.mean(reconst_loss + latent_loss)
-#
-#     def compute_latent_loss(self, mus, sigmas):
-#         mus_sq = mus * mus
-#         sigmas_sq = sigmas * sigmas
-#         log_simgas_sq = torch.log(sigmas_sq + 1e-10)
-#
-#         # latent_loss = torch.sum(
-#         #     mus_sq + sigmas_sq - log_simgas_sq, dim=(0, -1))
-#         # latent_loss = torch.sum(0.5 * (latent_loss - mus.shape[0]), dim=-1)
-#         latent_loss = torch.sum(mus_sq + sigmas_sq - log_simgas_sq, dim=0)
-#         latent_loss = torch.sum(0.5 * (latent_loss - mus.shape[0]), dim=-1)
-#         # latent_loss = 0.5 * (latent_loss - mus.shape[0])
-#
-#         # if self.reduction == 'sum':
-#         #     latent_loss = latent_loss.sum()
-#         # elif self.reduction == 'mean':
-#         #     latent_loss = latent_loss.mean()
-#
-#         return latent_loss
-
 
 if __name__ == '__main__':
     valid_size = 5000
@@ -109,8 +76,6 @@ if __name__ == '__main__':
             ax.imshow(images, cmap='gray', vmin=0.0, vmax=1.0)
 
             for i in range(len(model.attn_deltas[0])):
-                # if i % 4 != 0:
-                #     continue
                 for t in range(len(model.attn_deltas)):
                     if t % one_every != one_every - 1:
                         continue

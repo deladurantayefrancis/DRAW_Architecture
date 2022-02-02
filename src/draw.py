@@ -194,24 +194,16 @@ class DRAW(nn.Module):
         return torch.sigmoid(torch.stack(reconsts[1:]))
 
     def compute_loss(self, image, reconst, reduction='mean'):
+        # reconstruction loss
         reconst_loss = F.binary_cross_entropy(reconst, image, reduction='none')
         reconst_loss = reconst_loss.reshape(image.shape[0], -1)
         reconst_loss = torch.sum(reconst_loss, dim=-1)
 
+        # latent loss
         mus_sq = self.mus * self.mus
         sigmas_sq = self.sigmas * self.sigmas
         log_simgas_sq = torch.log(sigmas_sq + 1e-10)
         latent_loss = torch.sum(mus_sq + sigmas_sq - log_simgas_sq, dim=0)
         latent_loss = torch.sum(0.5 * (latent_loss - self.T), dim=-1)
 
-        total_loss = torch.mean(reconst_loss + latent_loss)
-
-        # print("reconst_loss", reconst_loss.mean().detach().item())
-        # print("latent_loss", latent_loss.mean().detach().item())
-
-        # if reduction == 'sum':
-        #     total_loss = total_loss.sum()
-        # elif reduction == 'mean':
-        #     total_loss = total_loss.mean()
-
-        return total_loss
+        return torch.mean(reconst_loss + latent_loss)
